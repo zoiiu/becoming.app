@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Becoming</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,200;0,9..40,300;0,9..40,400;1,9..40,200&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0b;
+    --surface: #111114;
+    --surface2: #17171c;
+    --border: #1e1e26;
+    --border2: #2a2a36;
+    --text: #e8e8ed;
+    --text2: #8888a0;
+    --text3: #444458;
+    --accent: #5b7fff;
+    --accent2: #8b6fff;
+    --pulse: #3effc8;
+    --warn: #ff6b6b;
+    --warn2: #ffb347;
+  }
+
+  html, body {
+    height: 100%;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .phone {
+    width: 390px;
+    height: 844px;
+    background: var(--bg);
+    border-radius: 48px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 0 1px #222, 0 40px 120px rgba(0,0,0,0.8), inset 0 0 0 1px #333;
+  }
+
+  /* Notch */
+  .notch {
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 126px; height: 34px;
+    background: #000;
+    border-radius: 0 0 20px 20px;
+    z-index: 100;
+  }
+
+  /* Screens */
+  .screen {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: none;
+    flex-direction: column;
+    scrollbar-width: none;
+  }
+  .screen::-webkit-scrollbar { display: none; }
+  .screen.active { display: flex; }
+
+  /* Status bar */
+  .status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 28px 0;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text2);
+    flex-shrink: 0;
+    margin-top: 10px;
+  }
+  .status-right { display: flex; gap: 5px; align-items: center; }
+
+  /* ── SPLASH ── */
+  #splash {
+    justify-content: center;
+    align-items: center;
+    background: var(--bg);
+  }
+  .splash-inner { text-align: center; }
+  .logo-ring {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    border: 1px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 24px;
+    position: relative;
+  }
+  .logo-ring::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border-radius: 50%;
+    border: 1px solid var(--accent);
+    opacity: 0.4;
+  }
+  .logo-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 16px var(--accent);
+  }
+  .logo-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.3em;
+    color: var(--text2);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .logo-name {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 36px;
+    font-weight: 200;
+    color: var(--text);
+    letter-spacing: 0.08em;
+  }
+  .splash-sub {
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 8px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.1em;
+  }
+  .splash-btn {
+    margin-top: 56px;
+    background: none;
+    border: 1px solid var(--border2);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    padding: 14px 40px;
+    border-radius: 100px;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+  }
+  .splash-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .splash-version {
+    margin-top: 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 0.2em;
+  }
+
+  /* ── ONBOARDING ── */
+  #onboard {
+    background: var(--bg);
+  }
+  .onboard-body {
+    flex: 1;
+    padding: 20px 32px 32px;
+    display: flex;
+    flex-direction: column;
+  }
+  .onboard-step {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+  }
+  .onboard-step.active { display: flex; }
+  .step-dots {
+    display: flex; gap: 6px; margin-bottom: 48px;
+  }
+  .step-dot {
+    height: 2px; border-radius: 1px; background: var(--border2);
+    transition: all 0.3s;
+  }
+  .step-dot.active { background: var(--accent); }
+  .step-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .step-title {
+    font-size: 28px;
+    font-weight: 200;
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: 16px;
+    letter-spacing: -0.01em;
+  }
+  .step-body {
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+  .step-visual {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 32px 0;
+  }
+  .visual-circle {
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    border: 1px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .visual-circle::after {
+    content: '';
+    position: absolute;
+    inset: 20px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+  }
+  .visual-inner {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 40%, var(--accent2), var(--accent));
+    opacity: 0.6;
+  }
+  .visual-bars {
+    display: flex; gap: 4px; align-items: flex-end; height: 80px;
+  }
+  .vbar {
+    width: 8px; border-radius: 4px; background: var(--border2);
+    position: relative; overflow: hidden;
+  }
+  .vbar-fill {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    border-radius: 4px;
+    background: linear-gradient(to top, var(--accent), var(--accent2));
+  }
+  .visual-lock {
+    text-align: center;
+  }
+  .lock-icon {
+    font-size: 48px; margin-bottom: 12px; opacity: 0.3;
+  }
+  .lock-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 0.15em;
+  }
+  .onboard-footer { flex-shrink: 0; }
+  .btn-primary {
+    width: 100%;
+    background: var(--accent);
+    border: none;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    padding: 16px;
+    border-radius: 14px;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: opacity 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-ghost {
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--text3);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 12px;
+    cursor: pointer;
+    margin-top: 4px;
+  }
+
+  /* ── HOME / DASHBOARD ── */
+  #home { background: var(--bg); }
+  .home-header {
+    padding: 50px 24px 20px;
+    flex-shrink: 0;
+  }
+  .home-greeting {
+    font-size: 12px;
+    color: var(--text3);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+  .home-name {
+    font-size: 24px;
+    font-weight: 200;
+    color: var(--text);
+  }
+  .device-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 100px;
+    padding: 5px 12px;
+    margin-top: 10px;
+  }
+  .device-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--pulse);
+    box-shadow: 0 0 8px var(--pulse);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .device-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text2);
+    letter-spacing: 0.1em;
+  }
+
+  .home-content { padding: 0 20px 100px; }
+
+  /* Focus ring */
+  .focus-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 24px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .focus-card::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(91,127,255,0.08) 0%, transparent 70%);
+  }
+  .card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--text3);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .focus-ring-wrap {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .ring-svg { flex-shrink: 0; }
+  .ring-stats { flex: 1; }
+  .ring-value {
+    font-size: 42px;
+    font-weight: 200;
+    color: var(--text);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .ring-unit {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 4px;
+  }
+  .ring-delta {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--pulse);
+    margin-top: 8px;
+  }
+
+  /* Mini cards grid */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .mini-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 18px 16px;
+  }
+  .mini-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--text3);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .mini-value {
+    font-size: 26px;
+    font-weight: 200;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .mini-sub {
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 2px;
+  }
+  .mini-bar {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-top: 12px;
+    overflow: hidden;
+  }
+  .mini-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(to right, var(--accent), var(--accent2));
+  }
+
+  /* Session card */
+  .session-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+  .session-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .session-row:last-child { border-bottom: none; }
+  .session-name {
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--text);
+  }
+  .session-time {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+  }
+  .session-score {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+  }
+
+  /* Alert card */
+  .alert-card {
+    background: rgba(255,107,107,0.06);
+    border: 1px solid rgba(255,107,107,0.2);
+    border-radius: 18px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .alert-text { font-size: 13px; color: var(--text2); line-height: 1.4; font-weight: 300; }
+  .alert-text strong { color: var(--warn); font-weight: 400; }
+
+  /* Bottom nav */
+  .bottom-nav {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 88px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    padding-top: 12px;
+    z-index: 50;
+  }
+  .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 4px;
+    transition: opacity 0.2s;
+  }
+  .nav-icon { font-size: 20px; }
+  .nav-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    color: var(--text3);
+    text-transform: uppercase;
+  }
+  .nav-item.active .nav-label { color: var(--accent); }
+  .nav-item.active .nav-icon { filter: none; }
+
+  /* ── DEVICE SCREEN ── */
+  #device { background: var(--bg); }
+  .device-header {
+    padding: 50px 24px 24px;
+    flex-shrink: 0;
+  }
+  .back-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: none; border: none;
+    color: var(--text2); font-family: 'DM Sans', sans-serif;
+    font-size: 14px; cursor: pointer; padding: 0;
+    margin-bottom: 20px;
+  }
+  .device-content { padding: 0 20px 100px; }
+
+  .device-hero {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 32px 24px;
+    text-align: center;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .device-hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: 50%; transform: translateX(-50%);
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(62,255,200,0.05) 0%, transparent 70%);
+  }
+  .device-model {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text3);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .device-name {
+    font-size: 22px;
+    font-weight: 200;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+  .device-ring {
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    border: 1px solid var(--border2);
+    margin: 0 auto 20px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .device-ring::before {
+    content: '';
+    position: absolute;
+    inset: 8px; border-radius: 50%;
+    border: 1px solid rgba(62,255,200,0.3);
+  }
+  .device-ring-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--pulse);
+    box-shadow: 0 0 20px var(--pulse);
+    animation: pulse 2s infinite;
+  }
+  .device-status-row {
+    display: flex; gap: 16px; justify-content: center;
+  }
+  .device-stat {
+    text-align: center;
+  }
+  .device-stat-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 16px;
+    color: var(--text);
+  }
+  .device-stat-lbl {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .settings-list {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .setting-row:last-child { border-bottom: none; }
+  .setting-left { display: flex; flex-direction: column; gap: 2px; }
+  .setting-name { font-size: 14px; font-weight: 300; color: var(--text); }
+  .setting-desc { font-size: 11px; color: var(--text3); }
+  .toggle {
+    width: 44px; height: 26px;
+    border-radius: 13px;
+    background: var(--border2);
+    position: relative;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .toggle.on { background: var(--accent); }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.2s;
+  }
+  .toggle.on::after { transform: translateX(18px); }
+  .setting-arrow { color: var(--text3); font-size: 14px; }
+
+  .remove-btn {
+    width: 100%;
+    background: rgba(255,107,107,0.08);
+    border: 1px solid rgba(255,107,107,0.2);
+    color: var(--warn);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    padding: 16px;
+    border-radius: 14px;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+
+  
+
+/* ── PROFILE SCREEN ── */
+  #profile { background: var(--bg); }
+  .profile-header {
+    padding: 50px 24px 24px;
+    flex-shrink: 0;
+  }
+  .profile-content { padding: 0 20px 100px; }
+  .profile-hero {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .avatar {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+    opacity: 0.7;
+  }
+  .profile-info { flex: 1; }
+  .profile-name { font-size: 18px; font-weight: 300; color: var(--text); }
+  .profile-id {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 0.1em;
+    margin-top: 3px;
+  }
+  .profile-plan {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 100px;
+    padding: 4px 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    margin-top: 6px;
+    display: inline-block;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .stat-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px 12px;
+    text-align: center;
+  }
+  .stat-box-val {
+    font-size: 22px;
+    font-weight: 200;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .stat-box-lbl {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 3px;
+  }
+
+  .fine-print {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--text3);
+    line-height: 1.6;
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-top: 8px;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── FAMILY / SEED SCREEN ── */
+  #family { background: var(--bg); }
+  .family-header {
+    padding: 50px 24px 24px;
+    flex-shrink: 0;
+  }
+  .family-content { padding: 0 20px 100px; }
+
+  .child-card {
+    background: linear-gradient(160deg, #1a1410 0%, #0f0d0a 100%);
+    border: 1px solid #2e2418;
+    border-radius: 22px;
+    padding: 20px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .child-avatar {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e8b86d, #c9874c);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+    opacity: 0.85;
+  }
+  .child-info { flex: 1; }
+  .child-name { font-size: 15px; font-weight: 400; color: var(--text); }
+  .child-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: #b08a55;
+    margin-top: 2px;
+    letter-spacing: 0.05em;
+  }
+  .child-status {
+    display: flex; align-items: center; gap: 5px;
+  }
+  .child-status-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--pulse);
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--text3);
+    text-transform: uppercase;
+    margin: 24px 0 12px;
+  }
+
+  .profile-option {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .profile-option.selected {
+    border-color: #c9874c;
+    background: rgba(201,135,76,0.06);
+  }
+  .profile-option-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 6px;
+  }
+  .profile-option-name {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text);
+  }
+  .profile-radio {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 1px solid var(--border2);
+    flex-shrink: 0;
+    position: relative;
+  }
+  .profile-option.selected .profile-radio {
+    border-color: #c9874c;
+  }
+  .profile-option.selected .profile-radio::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    background: #c9874c;
+  }
+  .profile-option-desc {
+    font-size: 12px;
+    color: var(--text3);
+    line-height: 1.5;
+    font-weight: 300;
+  }
+  .profile-option-tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    color: #c9874c;
+    background: rgba(201,135,76,0.1);
+    border-radius: 100px;
+    padding: 3px 8px;
+    margin-top: 8px;
+    text-transform: uppercase;
+  }
+
+  .priority-list {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 6px 18px;
+    margin-bottom: 16px;
+  }
+  .priority-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .priority-row:last-child { border-bottom: none; }
+  .priority-name { font-size: 13px; color: var(--text); font-weight: 300; }
+  .priority-slider {
+    width: 90px; height: 4px;
+    background: var(--border2);
+    border-radius: 2px;
+    position: relative;
+  }
+  .priority-slider-fill {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    border-radius: 2px;
+    background: linear-gradient(to right, #c9874c, #e8b86d);
+  }
+
+  .info-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin-top: 8px;
+    margin-bottom: 16px;
+  }
+  .info-box-title {
+    font-size: 12px;
+    color: var(--text2);
+    font-weight: 400;
+    margin-bottom: 6px;
+  }
+  .info-box-text {
+    font-size: 11px;
+    color: var(--text3);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .btn-warm {
+    width: 100%;
+    background: #c9874c;
+    border: none;
+    color: #1a1410;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 16px;
+    border-radius: 14px;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+
+  /* Scrollbar hide */
+  * { scrollbar-width: none; }
+  *::-webkit-scrollbar { display: none; }
+/* ── PARENTAL SCREEN ── */
+  #parental { background: var(--bg); }
+  .parental-header { padding: 50px 24px 24px; flex-shrink: 0; }
+  .parental-content { padding: 0 20px 100px; }
+
+  .kid-banner {
+    background: linear-gradient(135deg, var(--surface2), var(--surface));
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .kid-avatar {
+    width: 50px; height: 50px; border-radius: 50%;
+    background: linear-gradient(135deg, #e0a872, #c98a5e);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; color: #fff; flex-shrink: 0;
+  }
+  .kid-name { font-size: 16px; font-weight: 400; color: var(--text); }
+  .kid-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); margin-top: 3px; letter-spacing: 0.05em; }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--text3);
+    text-transform: uppercase;
+    margin: 20px 0 10px 4px;
+  }
+  .section-label:first-of-type { margin-top: 4px; }
+
+  .approval-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .approval-icon {
+    width: 34px; height: 34px; border-radius: 10px;
+    background: var(--surface2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; flex-shrink: 0;
+  }
+  .approval-text { flex: 1; }
+  .approval-title { font-size: 13px; color: var(--text); font-weight: 400; }
+  .approval-sub { font-size: 11px; color: var(--text3); margin-top: 2px; line-height: 1.4; }
+  .approval-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .approval-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 7px 12px;
+    border-radius: 100px;
+    border: 1px solid var(--border2);
+    background: none;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+  }
+  .approval-btn.deny { color: var(--warn); border-color: rgba(201,106,94,0.3); }
+  .approval-btn.allow { color: var(--pulse); border-color: rgba(138,166,122,0.4); }
+
+  .lock-slider-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px;
+  }
+  .slider-track {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    margin: 10px 0 4px;
+    position: relative;
+  }
+  .slider-fill {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    border-radius: 3px;
+    background: linear-gradient(to right, var(--accent2), var(--accent));
+  }
+  .slider-dot {
+    position: absolute; top: 50%; transform: translate(-50%, -50%);
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #fff; border: 2px solid var(--accent);
+  }
+  .slider-labels { display: flex; justify-content: space-between; font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); }
+
+  .kid-quote {
+    background: var(--surface2);
+    border: 1px dashed var(--border2);
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.55;
+  }
+  .kid-quote span { display: block; margin-top: 8px; font-style: normal; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.08em; color: var(--text3); text-transform: uppercase; }
+
+  .parental-fine-print {
+    font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3);
+    line-height: 1.6; padding: 16px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 16px; margin-top: 4px; letter-spacing: 0.01em;
+  }
+
+  /* Scrollbar hide */
+  * { scrollbar-width: none; }
+  *::-webkit-scrollbar { display: none; }
+
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="notch"></div>
+
+  <!-- ══ SPLASH ══ -->
+  <div class="screen active" id="splash">
+    <div class="status">
+      <span>9:41</span>
+      <div class="status-right">
+        <span>●●●</span>
+        <span>WiFi</span>
+        <span>100%</span>
+      </div>
+    </div>
+    <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+      <div class="splash-inner">
+        <div class="logo-ring">
+          <div class="logo-dot"></div>
+        </div>
+        <div class="logo-text">by NeuralCorp</div>
+        <div class="logo-name">Becoming</div>
+        <div class="splash-sub">attention, refined.</div>
+        <button class="splash-btn" onclick="goTo('onboard')">Comenzar</button>
+        <div class="splash-version">v3.0.1 · AURA EDITION</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ONBOARDING ══ -->
+  <div class="screen" id="onboard">
+    <div class="status">
+      <span>9:41</span>
+      <div class="status-right"><span>●●●</span><span>100%</span></div>
+    </div>
+    <div class="onboard-body">
+
+      <!-- Step 1 -->
+      <div class="onboard-step active" id="step1">
+        <div class="step-dots">
+          <div class="step-dot active" style="width:24px"></div>
+          <div class="step-dot" style="width:8px"></div>
+          <div class="step-dot" style="width:8px"></div>
+        </div>
+        <div class="step-eyebrow">Bienvenido</div>
+        <div class="step-title">Tu atención,<br>por primera vez<br>bajo control.</div>
+        <div class="step-body">Focal mide, calibra y dirige tu foco en tiempo real. El dispositivo hace el trabajo. Vos solo vivís.</div>
+        <div class="step-visual">
+          <div class="visual-circle">
+            <div class="visual-inner"></div>
+          </div>
+        </div>
+        <div class="onboard-footer">
+          <button class="btn-primary" onclick="nextStep(2)">Continuar</button>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="onboard-step" id="step2">
+        <div class="step-dots">
+          <div class="step-dot" style="width:8px"></div>
+          <div class="step-dot active" style="width:24px"></div>
+          <div class="step-dot" style="width:8px"></div>
+        </div>
+        <div class="step-eyebrow">Tu progreso</div>
+        <div class="step-title">Cada sesión<br>te entrena.</div>
+        <div class="step-body">El sistema aprende tu patrón atencional y optimiza en tiempo real. Después de 30 días, la diferencia es irreversible.</div>
+        <div class="step-visual">
+          <div class="visual-bars">
+            <div class="vbar" style="height:30%"><div class="vbar-fill" style="height:40%"></div></div>
+            <div class="vbar" style="height:50%"><div class="vbar-fill" style="height:55%"></div></div>
+            <div class="vbar" style="height:70%"><div class="vbar-fill" style="height:65%"></div></div>
+            <div class="vbar" style="height:55%"><div class="vbar-fill" style="height:72%"></div></div>
+            <div class="vbar" style="height:80%"><div class="vbar-fill" style="height:80%"></div></div>
+            <div class="vbar" style="height:65%"><div class="vbar-fill" style="height:88%"></div></div>
+            <div class="vbar" style="height:90%"><div class="vbar-fill" style="height:95%"></div></div>
+          </div>
+        </div>
+        <div class="onboard-footer">
+          <button class="btn-primary" onclick="nextStep(3)">Continuar</button>
+          <button class="btn-ghost" onclick="nextStep(1)">Atrás</button>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="onboard-step" id="step3">
+        <div class="step-dots">
+          <div class="step-dot" style="width:8px"></div>
+          <div class="step-dot" style="width:8px"></div>
+          <div class="step-dot active" style="width:24px"></div>
+        </div>
+        <div class="step-eyebrow">Privacidad</div>
+        <div class="step-title">Tus datos<br>nos pertenecen<br>a todos.</div>
+        <div class="step-body">Focal comparte métricas anónimas con la red global para mejorar el sistema. Tu patrón atencional contribuye al bien colectivo.</div>
+        <div class="step-visual">
+          <div class="visual-lock">
+            <div class="lock-icon">◉</div>
+            <div class="lock-text">DATOS EN TRÁNSITO<br>CIFRADOS · COMPARTIDOS</div>
+          </div>
+        </div>
+        <div class="onboard-footer">
+          <button class="btn-primary" onclick="goTo('home')">Aceptar y comenzar</button>
+          <button class="btn-ghost">Leer términos completos</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ HOME ══ -->
+  <div class="screen" id="home">
+    <div class="home-header">
+      <div class="status" style="padding: 0 0 16px;">
+        <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)">9:41</span>
+        <div class="status-right" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)"><span>●●●</span><span>100%</span></div>
+      </div>
+      <div class="home-greeting">martes, 16 de junio</div>
+      <div class="home-name">Buen día.</div>
+      <div class="device-badge">
+        <div class="device-dot"></div>
+        <span class="device-label">Becoming AURA · ACTIVO</span>
+      </div>
+    </div>
+
+    <div class="home-content">
+
+      <!-- Focus ring card -->
+      <div class="focus-card">
+        <div class="card-label">Índice de foco · Hoy</div>
+        <div class="focus-ring-wrap">
+          <svg class="ring-svg" width="80" height="80" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="34" fill="none" stroke="#1e1e26" stroke-width="6"/>
+            <circle cx="40" cy="40" r="34" fill="none" stroke="url(#rg)" stroke-width="6"
+              stroke-dasharray="213.6" stroke-dashoffset="32" stroke-linecap="round"
+              transform="rotate(-90 40 40)"/>
+            <defs>
+              <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#5b7fff"/>
+                <stop offset="100%" stop-color="#8b6fff"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="ring-stats">
+            <div class="ring-value">91</div>
+            <div class="ring-unit">/ 100 — óptimo</div>
+            <div class="ring-delta">↑ +12 vs ayer</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mini cards -->
+      <div class="cards-grid">
+        <div class="mini-card">
+          <div class="mini-label">Sesión activa</div>
+          <div class="mini-value">2h 14m</div>
+          <div class="mini-sub">sin interrupciones</div>
+          <div class="mini-bar"><div class="mini-bar-fill" style="width:74%"></div></div>
+        </div>
+        <div class="mini-card">
+          <div class="mini-label">Derivaciones</div>
+          <div class="mini-value">3</div>
+          <div class="mini-sub">corregidas auto.</div>
+          <div class="mini-bar"><div class="mini-bar-fill" style="width:30%"></div></div>
+        </div>
+        <div class="mini-card">
+          <div class="mini-label">Modo activo</div>
+          <div class="mini-value" style="font-size:16px;margin-top:4px;">Trabajo<br>profundo</div>
+        </div>
+        <div class="mini-card">
+          <div class="mini-label">Racha</div>
+          <div class="mini-value">47</div>
+          <div class="mini-sub">días consecutivos</div>
+        </div>
+      </div>
+
+      <!-- Alert -->
+      <div class="alert-card">
+        <div class="alert-icon">◎</div>
+        <div class="alert-text"><strong>Deriva atencional detectada</strong> a las 11:23. Focal redirigió automáticamente. No se requiere acción.</div>
+      </div>
+
+      <!-- Recent sessions -->
+      <div class="session-card">
+        <div class="card-label" style="margin-bottom:4px">Sesiones recientes</div>
+        <div class="session-row">
+          <div>
+            <div class="session-name">Trabajo profundo</div>
+            <div class="session-time">08:15 — 10:29</div>
+          </div>
+          <div class="session-score">94</div>
+        </div>
+        <div class="session-row">
+          <div>
+            <div class="session-name">Lectura</div>
+            <div class="session-time">07:02 — 07:48</div>
+          </div>
+          <div class="session-score">87</div>
+        </div>
+        <div class="session-row">
+          <div>
+            <div class="session-name">Descanso activo</div>
+            <div class="session-time">06:30 — 07:00</div>
+          </div>
+          <div class="session-score" style="color:var(--text3)">—</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item active">
+        <div class="nav-icon">◎</div>
+        <div class="nav-label">Inicio</div>
+      </div>
+      <div class="nav-item" onclick="goTo('device')">
+        <div class="nav-icon">⬡</div>
+        <div class="nav-label">Dispositivo</div>
+      </div>
+      <div class="nav-item" onclick="goTo('family')">
+        <div class="nav-icon">⌂</div>
+        <div class="nav-label">Familia</div>
+      </div>
+      <div class="nav-item" onclick="goTo('profile')">
+        <div class="nav-icon">◯</div>
+        <div class="nav-label">Perfil</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ DEVICE ══ -->
+  <div class="screen" id="device">
+    <div class="device-header">
+      <div class="status" style="padding: 0 0 16px;">
+        <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)">9:41</span>
+        <div class="status-right" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)"><span>●●●</span><span>100%</span></div>
+      </div>
+      <div style="font-size:22px;font-weight:200;color:var(--text)">Dispositivo</div>
+    </div>
+
+    <div class="device-content">
+      <div class="device-hero">
+        <div class="device-model">Becoming · AURA 3.0</div>
+        <div class="device-name">Unidad principal</div>
+        <div class="device-ring">
+          <div class="device-ring-dot"></div>
+        </div>
+        <div class="device-status-row">
+          <div class="device-stat">
+            <div class="device-stat-val">98%</div>
+            <div class="device-stat-lbl">Batería</div>
+          </div>
+          <div class="device-stat">
+            <div class="device-stat-val">36.7°</div>
+            <div class="device-stat-lbl">Temp.</div>
+          </div>
+          <div class="device-stat">
+            <div class="device-stat-val">47d</div>
+            <div class="device-stat-lbl">Activo</div>
+          </div>
+          <div class="device-stat">
+            <div class="device-stat-val" style="color:var(--pulse)">●</div>
+            <div class="device-stat-lbl">Estado</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-list">
+        <div class="setting-row">
+          <div class="setting-left">
+            <div class="setting-name">Corrección automática</div>
+            <div class="setting-desc">Redirige la atención sin intervención</div>
+          </div>
+          <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-left">
+            <div class="setting-name">Modo nocturno</div>
+            <div class="setting-desc">Calibración durante el sueño</div>
+          </div>
+          <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-left">
+            <div class="setting-name">Compartir métricas</div>
+            <div class="setting-desc">Contribuir a la red global Focal</div>
+          </div>
+          <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-left">
+            <div class="setting-name">Intensidad de señal</div>
+            <div class="setting-desc">Nivel 4 / 5 — Recomendado</div>
+          </div>
+          <div class="setting-arrow">›</div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-left">
+            <div class="setting-name">Actualizar firmware</div>
+            <div class="setting-desc">v3.0.1 · Al día</div>
+          </div>
+          <div class="setting-arrow">›</div>
+        </div>
+      </div>
+
+      <button class="remove-btn">Solicitar extracción del dispositivo</button>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);text-align:center;margin-top:10px;line-height:1.6;padding:0 8px">
+        La extracción requiere evaluación médica certificada.<br>Tiempo de procesamiento: 15–90 días hábiles.
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="goTo('home')">
+        <div class="nav-icon">◎</div>
+        <div class="nav-label">Inicio</div>
+      </div>
+      <div class="nav-item active">
+        <div class="nav-icon">⬡</div>
+        <div class="nav-label">Dispositivo</div>
+      </div>
+      <div class="nav-item" onclick="goTo('family')">
+        <div class="nav-icon">⌂</div>
+        <div class="nav-label">Familia</div>
+      </div>
+      <div class="nav-item" onclick="goTo('profile')">
+        <div class="nav-icon">◯</div>
+        <div class="nav-label">Perfil</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FAMILY (SEED — selección parental) ══ -->
+  <div class="screen" id="family">
+    <div class="family-header">
+      <div class="status" style="padding:0 0 16px;"><span>9:41</span><div class="status-right"><span>●●●</span><span>100%</span></div></div>
+      <div style="font-size:22px;font-weight:200;color:var(--text)">Familia</div>
+      <div style="font-family:'DM Mono';font-size:10px;color:var(--text3);margin-top:4px;letter-spacing:.1em">BECOMING KIDS · PERFIL</div>
+    </div>
+    <div class="family-content">
+      <div class="child-card">
+        <div class="child-avatar">M</div>
+        <div class="child-info"><div class="child-name">Mateo · 8 años</div><div class="child-meta">Perfil de intención activo</div></div>
+        <div class="child-status"><div class="child-status-dot"></div></div>
+      </div>
+
+      <div class="section-label">Sobre el perfil de intención</div>
+      <div class="info-box">
+        <div class="info-box-text">Recordatorio: el perfil de intención de Mateo fue declarado por un adulto que tampoco sabía, a los 7 años, que terminaría usando Becoming. Esto no se considera una contradicción.</div>
+        <div class="profile-option-tag">NOTA GENERADA AUTOMÁTICAMENTE · NO EDITABLE</div>
+      </div>
+
+      <div class="section-label">Control de desvíos</div>
+      <div class="focus-card">
+        <div class="profile-option-name">Tolerancia a la curiosidad espontánea</div>
+        <div class="priority-slider" style="margin-top:16px"><div class="priority-slider-fill" style="width:10%"></div></div>
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono';font-size:10px;color:var(--text3);margin-top:8px"><span>cero sorpresas</span><span>caos total</span></div>
+      </div>
+
+      <div class="section-label">Aprobaciones pendientes</div>
+      <div class="approval-card"><div class="approval-icon">🦖</div><div class="approval-text"><div class="approval-title">Mateo se detuvo en "dinosaurios"</div><div class="approval-sub">No está en su perfil de intención declarado.</div></div><button class="approval-btn">Filtrar</button><button class="approval-btn">Permitir</button></div>
+      <div class="approval-card"><div class="approval-icon">🎨</div><div class="approval-text"><div class="approval-title">Interés emergente: dibujo libre</div><div class="approval-sub">Patrón nuevo, sin precedentes en sus últimos 90 días.</div></div><button class="approval-btn">Filtrar</button><button class="approval-btn">Permitir</button></div>
+
+      <div class="quote-card">“Antes Mateo quería ser astronauta, después dinosaurio, después youtuber. Con Becoming Kids fijamos ‘ingeniero’ a los 4 años y listo. Cero ansiedad vocacional.”<span>Testimonio destacado · comunidad de padres Becoming</span></div>
+
+      <div class="info-box">
+       <div class="info-box-text">Becoming Kids™ permite fijar el perfil de intención de un menor desde los 18 meses. El menor podrá solicitar la modificación de su propio perfil al cumplir la mayoría de edad.</div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="goTo('home')"><div class="nav-icon">◎</div><div class="nav-label">Yo</div></div>
+      <div class="nav-item" onclick="goTo('device')"><div class="nav-icon">⬡</div><div class="nav-label">Dispositivo</div></div>
+      <div class="nav-item active"><div class="nav-icon">✿</div><div class="nav-label">Familia</div></div>
+      <div class="nav-item" onclick="goTo('profile')"><div class="nav-icon">◯</div><div class="nav-label">Perfil</div></div>
+    </div>
+  </div>
+
+  <!-- ══ PROFILE ══ -->
+  <div class="screen" id="profile">
+    <div class="profile-header">
+      <div class="status" style="padding: 0 0 16px;">
+        <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)">9:41</span>
+        <div class="status-right" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)"><span>●●●</span><span>100%</span></div>
+      </div>
+      <div style="font-size:22px;font-weight:200;color:var(--text)">Perfil</div>
+    </div>
+
+    <div class="profile-content">
+      <div class="profile-hero">
+        <div class="avatar">◉</div>
+        <div class="profile-info">
+          <div class="profile-name">Usuario #00847</div>
+          <div class="profile-id">ID · FCL-2024-00847-AR</div>
+          <div class="profile-plan">Becoming CORE · ACTIVO</div>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-box-val">47</div>
+          <div class="stat-box-lbl">Días</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-val">312h</div>
+          <div class="stat-box-lbl">Foco total</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-val">91</div>
+          <div class="stat-box-lbl">Score hoy</div>
+        </div>
+      </div>
+
+      <div class="settings-list">
+        <div class="setting-row">
+          <div class="setting-name">Historial de sesiones</div>
+          <div class="setting-arrow">›</div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-name">Mis datos</div>
+          <div class="setting-arrow">›</div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-name">Plan y suscripción</div>
+          <div class="setting-arrow">›</div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-name">Soporte médico</div>
+          <div class="setting-arrow">›</div>
+        </div>
+      </div>
+
+      <div class="fine-print">
+        Al usar Focal, el usuario acepta que NeuralCorp S.A. retiene los derechos de análisis sobre los patrones atencionales generados. Los datos no pueden ser eliminados mientras el dispositivo esté activo. La desvinculación de cuenta no implica la desactivación del dispositivo. Para más información, consultar términos completos en focal.io/legal — documento de 847 páginas disponible en inglés técnico.
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="goTo('home')">
+        <div class="nav-icon">◎</div>
+        <div class="nav-label">Inicio</div>
+      </div>
+      <div class="nav-item" onclick="goTo('device')">
+        <div class="nav-icon">⬡</div>
+        <div class="nav-label">Dispositivo</div>
+      </div>
+      <div class="nav-item" onclick="goTo('family')">
+        <div class="nav-icon">⌂</div>
+        <div class="nav-label">Familia</div>
+      </div>
+      <div class="nav-item active">
+        <div class="nav-icon">◯</div>
+        <div class="nav-label">Perfil</div>
+      </div>
+    </div>
+  <!-- ══ PARENTAL ══ -->
+  <div class="screen" id="parental">
+    <div class="parental-header">
+      <div class="status" style="padding: 0 0 16px;">
+        <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)">9:41</span>
+        <div class="status-right" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)"><span>●●●</span><span>100%</span></div>
+      </div>
+      <div style="font-size:22px;font-weight:200;color:var(--text)">Becoming Kids™</div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:4px;letter-spacing:0.05em">porque ellos todavía no saben quiénes son</div>
+    </div>
+
+    <div class="parental-content">
+
+      <div class="kid-banner">
+        <div class="kid-avatar">✿</div>
+        <div>
+          <div class="kid-name">Mateo, 7 años</div>
+          <div class="kid-sub">Perfil de intención fijado por: mamá</div>
+        </div>
+      </div>
+
+      <div class="quote-card" style="margin-bottom: 16px;">
+        "Antes Mateo quería ser astronauta, después dinosaurio, después youtuber. Con Becoming Kids fijamos 'ingeniero' a los 4 años y listo. Cero ansiedad vocacional."
+        <span>— Testimonio destacado, comunidad de padres Becoming</span>
+      </div>
+
+      <div class="section-label">Aprobaciones pendientes</div>
+
+      <div class="approval-card">
+        <div class="approval-icon">🦕</div>
+        <div class="approval-text">
+          <div class="approval-title">Mateo se detuvo en "dinosaurios" 4 min</div>
+          <div class="approval-sub">No está en su perfil de intención declarado (Ciencias exactas → Ingeniería).</div>
+        </div>
+        <div class="approval-actions">
+          <button class="approval-btn deny">Filtrar</button>
+          <button class="approval-btn allow">Permitir</button>
+        </div>
+      </div>
+
+      <div class="approval-card">
+        <div class="approval-icon">🎨</div>
+        <div class="approval-text">
+          <div class="approval-title">Interés emergente: dibujo libre</div>
+          <div class="approval-sub">Patrón nuevo, sin precedentes en sus últimos 90 días de actividad.</div>
+        </div>
+        <div class="approval-actions">
+          <button class="approval-btn deny">Filtrar</button>
+          <button class="approval-btn allow">Permitir</button>
+        </div>
+      </div>
+
+      <div class="approval-card">
+        <div class="approval-icon">🔬</div>
+        <div class="approval-text">
+          <div class="approval-title">Sesión de "ciencia con imanes" — 38 min</div>
+          <div class="approval-sub">Coincide con perfil declarado. Aprobado automáticamente.</div>
+        </div>
+        <div class="approval-actions">
+          <button class="approval-btn allow" style="opacity:0.5;cursor:default">✓ OK</button>
+        </div>
+      </div>
+
+      <div class="section-label">Control de desvíos</div>
+
+      <div class="approval-card" style="display:block;">
+        <div class="lock-slider-row">
+          <div class="approval-title">Tolerancia a la curiosidad espontánea</div>
+        </div>
+        <div class="slider-track">
+          <div class="slider-fill" style="width:8%"></div>
+          <div class="slider-dot" style="left:8%"></div>
+        </div>
+        <div class="slider-labels"><span>cero sorpresas</span><span>caos total</span></div>
+      </div>
+
+      <div class="section-label">Sobre el perfil de intención</div>
+
+      <div class="kid-quote">
+        Recordatorio: el perfil de intención de Mateo fue declarado por un adulto que tampoco sabía, a los 7 años, que terminaría usando Becoming. Esto no se considera una contradicción.
+        <span>Nota generada automáticamente · no editable</span>
+      </div>
+
+      <div class="parental-fine-print">
+        Becoming Kids™ permite fijar el perfil de intención de un menor desde los 18 meses. El menor podrá solicitar la modificación de su propio perfil al cumplir la mayoría de edad, sujeto a evaluación de si "todavía" desea cambiarlo. NeuralCorp no se responsabiliza por intereses, vocaciones o personalidades descubiertas fuera del perfil declarado.
+      </div>
+
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="goTo('home')">
+        <div class="nav-icon">◎</div>
+        <div class="nav-label">Yo</div>
+      </div>
+      <div class="nav-item" onclick="goTo('device')">
+        <div class="nav-icon">⬡</div>
+        <div class="nav-label">Dispositivo</div>
+      </div>
+      <div class="nav-item active">
+        <div class="nav-icon">✿</div>
+        <div class="nav-label">Familia</div>
+      </div>
+      <div class="nav-item" onclick="goTo('profile')">
+        <div class="nav-icon">◯</div>
+        <div class="nav-label">Perfil</div>
+      </div>
+    </div>
+  </div>
+
+  
+
+</div>
+
+<script>
+  function goTo(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.getElementById(id).scrollTop = 0;
+  }
+
+  function nextStep(n) {
+    document.querySelectorAll('.onboard-step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step' + n).classList.add('active');
+  }
+
+  document.querySelectorAll('.profile-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      opt.closest('.family-content').querySelectorAll('.profile-option').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+    });
+  });
+</script>
+</body>
+</html>

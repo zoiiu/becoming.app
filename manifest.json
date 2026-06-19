@@ -1,0 +1,9 @@
+{
+  "name": "Becoming",
+  "short_name": "Becoming",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#fdfbf7",
+  "theme_color": "#c98a5e",
+  "description": "Becoming app"
+}
